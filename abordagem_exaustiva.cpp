@@ -2,7 +2,9 @@
 #include <fstream>
 #include <vector>
 
-bool is_clique(const std::vector<std::vector<bool>>& graph, const std::vector<int>& vertices) {
+using namespace std;
+
+bool is_clique(const vector<vector<bool>>& graph, const vector<int>& vertices) {
     for(int i = 0; i < vertices.size(); i++) {
         for(int j = i+1; j < vertices.size(); j++) {
             if(!graph[vertices[i]][vertices[j]]) {
@@ -13,13 +15,13 @@ bool is_clique(const std::vector<std::vector<bool>>& graph, const std::vector<in
     return true;
 }
 
-std::vector<int> max_clique(const std::vector<std::vector<bool>>& graph) {
+vector<int> max_clique(const std::vector<std::vector<bool>>& graph) {
     int n = graph.size();
-    std::vector<int> max_clique_vertices;  // Vetor para armazenar os vértices do clique máximo.
+    vector<int> max_clique_vertices;  // Vetor para armazenar os vértices do clique máximo.
 
     // Iterar sobre todos os possíveis subconjuntos de vértices.
     for(int mask = 1; mask < (1 << n); mask++) {
-        std::vector<int> vertices;
+        vector<int> vertices;
         for(int i = 0; i < n; i++) {
             if(mask & (1 << i)) {
                 vertices.push_back(i);
@@ -36,17 +38,17 @@ std::vector<int> max_clique(const std::vector<std::vector<bool>>& graph) {
 }
 
 int main() {
-    std::ifstream file("grafo.txt");
+    ifstream file("grafo.txt");
 
     if(!file.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo." << std::endl;
+        cerr << "Erro ao abrir o arquivo." << endl;
         return 1;
     }
 
     int n_vertices, n_edges;
     file >> n_vertices >> n_edges;
 
-    std::vector<std::vector<bool>> graph(n_vertices, std::vector<bool>(n_vertices, false));
+    vector<vector<bool>> graph(n_vertices, vector<bool>(n_vertices, false));
 
     for(int i = 0; i < n_edges; i++) {
         int u, v;
@@ -58,12 +60,12 @@ int main() {
     file.close();
 
     // Encontrar e imprimir os vértices do maior clique.
-    std::vector<int> max_clique_vertices = max_clique(graph);
-    std::cout << "Vértices do clique máximo: ";
+    vector<int> max_clique_vertices = max_clique(graph);
+    cout << "Vértices do clique máximo: ";
     for(int vertex : max_clique_vertices) {
-        std::cout << vertex + 1 << " ";  // Ajustando índices para imprimir começando de 1.
+        cout << vertex + 1 << " ";  // Ajustando índices para imprimir começando de 1.
     }
-    std::cout << std::endl;
+    cout << endl;
 
     return 0;
 }
