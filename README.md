@@ -1,5 +1,6 @@
 # Graph_MaxClique_Optimizer
 
+
 ## Descrição do Projeto
 
 Este projeto aborda o desafio computacional de encontrar a clique máxima em um grafo no contexto da Análise de Redes Sociais (ARS). A ARS foca nas ligações relacionais entre atores sociais, sejam eles indivíduos ou entidades coletivas, e a clique máxima representa um subconjunto de uma rede onde todos os membros estão interligados, evidenciando grupos coesos dentro da rede.
