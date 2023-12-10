@@ -1,10 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <omp.h>  // OpenMP
 
 using namespace std;
 
-// Função para verificar se um subconjunto de vértices forma um clique
+/// Função para verificar se um subconjunto de vértices forma um clique
 bool is_clique(const vector<vector<bool>>& graph, const vector<int>& vertices) {
     // Iterar sobre todos os pares de vértices do subconjunto
     for(int i = 0; i < vertices.size(); i++) {
@@ -71,13 +72,48 @@ int main() {
 
     file.close();
 
-    // Encontrar e imprimir os vértices do maior clique.
-    vector<int> max_clique_vertices = max_clique(graph);
+    vector<int> max_clique_vertices;
+
+    // Medir o tempo de execução em paralelo
+    double start_time = omp_get_wtime();
+
+    // Diretiva OpenMP para paralelizar o bloco de código a seguir
+    #pragma omp parallel
+    {
+        vector<int> local_max_clique;
+
+        // Diretiva OpenMP para dividir iterações do loop entre as threads
+        #pragma omp for nowait
+        for(int mask = 1; mask < (1 << n_vertices); mask++) {
+            vector<int> vertices;
+            for(int i = 0; i < n_vertices; i++) {
+                if(mask & (1 << i)) {
+                    vertices.push_back(i);
+                }
+            }
+            if(is_clique(graph, vertices) && vertices.size() > local_max_clique.size()) {
+                local_max_clique = vertices;
+            }
+        }
+
+        // Diretiva OpenMP para seção crítica: apenas uma thread por vez pode executar
+        #pragma omp critical
+        {
+            if(local_max_clique.size() > max_clique_vertices.size()) {
+                max_clique_vertices = local_max_clique;
+            }
+        }
+    }
+
+    double end_time = omp_get_wtime();
+
     cout << "Vértices do clique máximo: ";
     for(int vertex : max_clique_vertices) {
-        cout << vertex + 1 << " ";  // Ajustando índices para imprimir começando de 1.
+        cout << vertex + 1 << " ";
     }
     cout << endl;
+
+    cout << "Tempo de execução paralelizado: " << end_time - start_time << " segundos" << std::endl;
 
     return 0;
 }
